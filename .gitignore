@@ -2,4 +2,4 @@ kali-ips
 *test*
 newsh.sh
 # ignore output testing files
-*.c
+*.[ch]
