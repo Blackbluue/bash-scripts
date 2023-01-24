@@ -1,18 +1,32 @@
 #!/bin/bash
 lib_name="${1// /_}"
 test_all="test/test-all.c"
-test_suite="test/test-${lib_name}.c"
+test_suite_file="test/test-${lib_name}.c"
 
 mkdir "test"
 touch $test_all
+suite_name="${lib_name}_test_suite"
 cat > $test_all << EOM
 #include <check.h>
+
+Suite *${suite_name}(void);
+
+int main(void)
+{
+	SRunner *sr = srunner_create(NULL);
+
+	srunner_add_suite(sr, ${suite_name}());
+
+	srunner_run_all(sr, CK_NORMAL);
+
+	srunner_free(sr);
+}
 EOM
 
-touch $test_suite
+touch $test_suite_file
 example_case="test_${lib_name}_example"
 profile_case="test_${lib_name}_profile"
-cat > $test_suite << EOM
+cat > $test_suite_file << EOM
 #include <check.h>
 
 #include "../${lib_name}.h"
@@ -29,7 +43,7 @@ START_TEST(${profile_case})
 }
 END_TEST
 
-Suite *${lib_name}_test_suite(void)
+Suite *${suite_name}(void)
 {
 	Suite *s1 = suite_create("${lib_name^}");
 
