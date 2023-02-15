@@ -1,10 +1,22 @@
-#!/bin/sh
-python_version="#!/usr/bin/env python3\n\n"
-file_name="$1.py"
+#!/bin/bash
+shebang="#!/usr/bin/env python3"
+file_name="${1// /_}.py"
 touch $file_name
-echo $python_version >> $file_name
-echo "def main():" >> $file_name
-echo "    return\n\n" >> $file_name
-echo "if __name__ == \"__main__\":" >> $file_name
-echo "    main()" >> $file_name
+
+cat > $file_name << EOM
+${shebang}
+import sys
+
+def main():
+    return
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except (Exception, GeneratorExit, KeyboardInterrupt, SystemExit) as e:
+        print("Error executing program with error "
+            f"{type(e).__name__}:", e, file=sys.stderr)
+
+EOM
 chmod a+x $file_name
